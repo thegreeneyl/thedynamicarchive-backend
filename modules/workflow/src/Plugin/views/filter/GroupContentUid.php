@@ -28,7 +28,9 @@ class GroupContentUid extends FilterPluginBase {
 
   public function query() {
     $table = $this->ensureMyTable();
-    $snippet = "($table.uid = ***CURRENT_USER*** AND ***CURRENT_USER*** <> 0 AND ***VIEW_OWN_UNPUBLISHED_NODES*** = 1) OR ***BYPASS_NODE_ACCESS*** = 1";
+    $snippet = "($table.type <> 'component-group_membership' AND $table.uid = ***CURRENT_USER*** AND ***CURRENT_USER*** <> 0 AND ***VIEW_OWN_UNPUBLISHED_NODES*** = 1)";
+    $snippet .= " OR ($table.type = 'component-group_membership' AND $table.entity_id = ***CURRENT_USER*** AND ***CURRENT_USER*** <> 0 AND ***VIEW_OWN_UNPUBLISHED_NODES*** = 1)";
+    $snippet .= " OR ***BYPASS_NODE_ACCESS*** = 1";
     if ($this->moduleHandler->moduleExists('content_moderation')) {
       $snippet .= ' OR ***VIEW_ANY_UNPUBLISHED_NODES*** = 1';
     }

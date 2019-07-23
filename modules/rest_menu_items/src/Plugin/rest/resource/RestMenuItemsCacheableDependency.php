@@ -37,6 +37,7 @@ class RestMenuItemsCacheableDependency implements CacheableDependencyInterface {
     // URL parameters as contexts
     if ($this->minDepth != 1 || $this->maxDepth != 1) {
       $contexts[] = 'url.query_args';
+      $contexts[] = 'user.permissions';
     }
     return $contexts;
   }

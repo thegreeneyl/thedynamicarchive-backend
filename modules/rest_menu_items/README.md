@@ -4,8 +4,8 @@ None.
 
 ## INSTALLATION
 
-* Install as usual.
-* You can enable the endpoint through the [REST UI](http://www.drupal.org/project/restui) module
+* Enable the module as usual.
+* You can enable the REST endpoint through the [REST UI](http://www.drupal.org/project/restui) module or checkout [RESTful Web Services API overview](https://www.drupal.org/docs/8/api/restful-web-services-api/restful-web-services-api-overview) page
 
 ## CONFIGURATION
 
@@ -43,4 +43,3 @@ Current maintainers:
 
 This project has been sponsored by:
 * [Finalist](https://www.drupal.org/finalist)
-* [Youwe](https://www.drupal.org/youwe)

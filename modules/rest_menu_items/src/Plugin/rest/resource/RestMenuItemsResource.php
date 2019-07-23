@@ -104,7 +104,7 @@ class RestMenuItemsResource extends ResourceBase {
    *
    * @return \Drupal\rest\ResourceResponse
    *   The response containing a list of bundle names.
-
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
@@ -242,7 +242,7 @@ class RestMenuItemsResource extends ResourceBase {
    *   The return array we want to add this item to.
    * @param string $key
    *   The key to use in the output.
-   * @param \Drupal\Core\Menu\MenuLinkDefault $link
+   * @param \Drupal\Core\Menu\MenuLinkInterface $link
    *   The link from the menu.
    * @param \Drupal\Core\Url $url
    *   The URL object of the menu item.
@@ -251,6 +251,7 @@ class RestMenuItemsResource extends ResourceBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   protected function getElementValue(array &$returnArray, $key, MenuLinkInterface $link, Url $url) {
+    $config = $this->configFactory->get('rest_menu_items.config');
     $external = $url->isExternal();
     $routed = $url->isRouted();
     $existing = TRUE;
@@ -258,7 +259,7 @@ class RestMenuItemsResource extends ResourceBase {
 
     // Check if the url is a <nolink> and do not do anything for some keys.
     $itemsToRemoveWhenNoLink = ['uri', 'alias', 'absolute', 'relative'];
-    if (!$url->isExternal() && $url->getRouteName() === '<nolink>' && in_array($key, $itemsToRemoveWhenNoLink)) {
+    if (!$external && $routed && $url->getRouteName() === '<nolink>' && in_array($key, $itemsToRemoveWhenNoLink)) {
       return;
     }
 
@@ -306,19 +307,37 @@ class RestMenuItemsResource extends ResourceBase {
         break;
 
       case 'absolute':
+        $base_url = $config->get('base_url');
+
         if ($external) {
           $value = $uri;
         }
         elseif (!$routed) {
-          $url->setAbsolute();
+          if (empty($base_url)) {
+            $url->setAbsolute();
+          }
+
           $value = $url
             ->toString(TRUE)
             ->getGeneratedUrl();
+
+          if (!empty($base_url)) {
+            $value = $base_url . $value;
+          }
         }
         else {
-          $value = Url::fromUri('internal:/' . $uri, ['absolute' => TRUE])
+          $options = [];
+          if (empty($base_url)) {
+            $options = ['absolute' => TRUE];
+          }
+
+          $value = Url::fromUri('internal:/' . $uri, $options)
             ->toString(TRUE)
             ->getGeneratedUrl();
+
+          if (!empty($base_url)) {
+            $value = $base_url . $value;
+          }
         }
         break;
 
@@ -375,7 +394,27 @@ class RestMenuItemsResource extends ResourceBase {
         break;
     }
 
+    $addFragmentElements = ['alias', 'absolute', 'relative'];
+    if (!empty($config->get('add_fragment')) && in_array($key, $addFragmentElements)) {
+      $this->addFragment($value, $link);
+    }
+
     $returnArray[$key] = $value;
+  }
+
+  /**
+   * Add the fragment to the value if neccesary.
+   *
+   * @param string $value
+   *   The value to add the fragment to. Passed by reference.
+   * @param \Drupal\Core\Menu\MenuLinkInterface $link
+   *   The link from the menu.
+   */
+  private function addFragment(&$value, $link) {
+    $options = $link->getOptions();
+    if (!empty($options) && isset($options['fragment'])) {
+      $value .= '#' . $options['fragment'];
+    }
   }
 
 }

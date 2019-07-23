@@ -36,7 +36,7 @@ class ConfigForm extends ConfigFormBase {
       '#title' => $this->t('What values do you need in the output?'),
       '#options' => [
         'key' => $this->t('Key'),
-        'title' => $this->t('Ttitle'),
+        'title' => $this->t('Title'),
         'description' => $this->t('Description'),
         'uri' => $this->t('Uri'),
         'alias' => $this->t('Alias'),
@@ -52,6 +52,21 @@ class ConfigForm extends ConfigFormBase {
       ],
       '#default_value' => $config->get('output_values'),
     ];
+
+    $form['base_url'] = [
+      '#type' => 'textfield',
+      '#default_value' => $config->get('base_url'),
+      '#title' => $this->t('Base URL'),
+      '#description' => $this->t('This url is used as the base url in the absolute links.'),
+    ];
+
+    $form['add_fragment'] = [
+      '#type' => 'checkbox',
+      '#default_value' => $config->get('add_fragment'),
+      '#title' => $this->t('Add the fragment (#id) to the url'),
+      '#description' => $this->t('This adds the #id (fragment, anchor link) to the outputted url.'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -70,6 +85,8 @@ class ConfigForm extends ConfigFormBase {
 
     $this->config('rest_menu_items.config')
       ->set('output_values', $form_state->getValue('output_values'))
+      ->set('base_url', $form_state->getValue('base_url'))
+      ->set('add_fragment', $form_state->getValue('add_fragment'))
       ->save();
   }
 
