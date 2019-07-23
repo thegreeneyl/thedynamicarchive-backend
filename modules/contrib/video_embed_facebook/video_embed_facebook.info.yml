@@ -1,0 +1,16 @@
+name: Video Embed Facebook
+type: module
+# core: 8.x
+description: Embed Facebook videos into your website using Video Embed Field.
+package: Video Embed Field
+dependencies:
+  - video_embed_field
+
+test_dependencies:
+  - video_embed_field
+
+# Information added by Drupal.org packaging script on 2017-05-10
+version: '8.x-1.3'
+core: '8.x'
+project: 'video_embed_facebook'
+datestamp: 1494404595

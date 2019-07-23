@@ -1,0 +1,14 @@
+name: 'Node Order'
+description: 'Allows the ordering of nodes within taxonomy terms.'
+# core: 8.x
+configure: nodeorder.admin
+dependencies:
+  - drupal:node
+  - drupal:taxonomy
+type: module
+
+# Information added by Drupal.org packaging script on 2018-05-02
+version: '8.x-1.0-beta2'
+core: '8.x'
+project: 'nodeorder'
+datestamp: 1525285984

@@ -1,0 +1,9 @@
+workflow.admin:
+  path: '/admin/config/development/workflow'
+  defaults:
+    _form: '\Drupal\workflow\Form\WorkflowForm'
+    _title: 'Workflow'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE

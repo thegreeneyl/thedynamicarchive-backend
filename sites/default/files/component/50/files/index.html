@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    html {
+      width: 100%;
+      height: 100%;
+      background-color: #ddd;
+      font-family: sans-serif;
+    }
+
+    button {
+      position: absolute;
+    }
+
+    .sub {
+      position: fixed;
+      left: 0;
+      right: 0;
+      margin: auto;
+      bottom: 0px;
+      font-size: 24px;
+      color: #ffee9d;
+      width: 800px;
+      text-align: center;
+      letter-spacing: 2px;
+      bottom: 10px;
+      pointer-events: none;
+      text-shadow: -1px 0 black, 0 1px grey, 1px 0 black, 0 -1px grey;
+    }
+  </style>
+</head>
+
+<body>
+
+  <button id='btn' onclick='alert("Congrats! You pressed the button.");'>Press</button>
+  <div id="sub" class="sub"></div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous">
+  </script>
+
+  <script type="text/javascript">
+    var curX = 0;
+    var curY = 0;
+    var height = $(window).height();
+    var width = $(window).width();
+    var min_left = 100;
+    var min_top = 100;
+    var max_left = $(window).width() - 100;
+    var max_top = $(window).height() - 100;
+
+    var leftCalc = Math.floor(Math.random() * (max_left - min_left)) + min_left;
+    var topCalc = Math.floor(Math.random() * (max_top - min_top)) + min_top;
+
+    $(document).ready(function() {
+      $('#btn').css({
+        left: leftCalc,
+        top: topCalc
+      });
+      escape();
+    });
+
+    function escape() {
+
+      document.getElementById("sub").textContent = 'Try to get me!';
+
+      $(document).on("mousemove", function(event) {
+        curX = event.pageX;
+        curY = event.pageY;
+      });
+
+      var words = ["LOL", "COME ON YOU CAN DO BETTER", ":D :D :D", "YOU ARE TOO SLOW", "LOOOOOSER", "TRY TO GET ME", "AHHH YOU WLL NEVER GET ME", "HOW DISAPPOINTED YOUR MOM MUST BE..."];
+
+      $("#btn").on('mouseover', function() {
+        var offset = $(this).offset();
+        var offset_mp_left = offset.left+40;
+        var offset_mp_top = offset.top+15;
+        var offset_left = offset_mp_left-50;
+        var offset_right = offset_mp_left+50;
+        var offset_bottom = offset_mp_top+25;
+        var offset_top = offset_mp_top-25;
+
+        min = Math.ceil(3);
+        max = Math.floor(16);
+        min1 = Math.ceil(-3);
+        max1 = Math.floor(-16);
+
+        var goX = Math.floor(Math.random() * (max - min)) + min;
+        var goX2 = Math.floor(Math.random() * (max - min)) + min;
+        var goY = Math.floor(Math.random() * (max1 - min1)) + min1;
+        var goY2 = Math.floor(Math.random() * (max1 - min1)) + min1;
+
+        // stay inside window
+        if (offset.top > 50 && offset.top < height - 50 && offset.left > 50 && offset.left < width - 50) {
+
+          var word = words[Math.floor(Math.random() * words.length)];
+          document.getElementById("sub").textContent = word;
+
+          // upper left mouseover
+          if (curY < offset_mp_top && curY > offset_top && curX < offset_mp_left && curX > offset_left) {
+            $(this).css('top', offset.top + 2 * goX);
+            $(this).css('left', offset.left + 2 * goX2);
+          }
+          // upper right mouseover
+          if (curY < offset_mp_top && curY > offset_top && curX > offset_mp_left && curX < offset_right) {
+            $(this).css('top', offset.top + 2 * goX);
+            $(this).css('left', offset.left + 2 * goY);
+          }
+          // down left mouseover
+          if (curY > offset_mp_top && curY < offset_bottom && curX < offset_mp_left && curX > offset_left) {
+            $(this).css('top', offset.top + 2 * goY);
+            $(this).css('left', offset.left + 2 * goX);
+          }
+          // down right mouseover
+          if (curY > offset_mp_top && curY < offset_bottom && curX > offset_mp_left && curX < offset_right) {
+            $(this).css('top', offset.top + 2 * goY);
+            $(this).css('left', offset.left + 2 * goY2);
+          }
+        } else {
+          document.getElementById("sub").textContent = 'Ok, I give up, you won...';
+        }
+
+      });
+
+    };
+
+  </script>
+
+</body>
+
+</html>

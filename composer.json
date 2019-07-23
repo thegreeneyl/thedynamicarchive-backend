@@ -1,0 +1,124 @@
+{
+    "name": "my/project",
+    "description": "Project template for Drupal 8 projects with composer",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "",
+            "role": ""
+        }
+    ],
+    "repositories": {
+        "drupal": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        "asset-packagist": {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    },
+    "require": {
+        "php": "^5.5.9|>=7.0.8",
+        "composer/installers": "^1.2.0",
+        "cweagans/composer-patches": "^1.6.5",
+        "drupal-composer/drupal-scaffold": "^2.5.4",
+        "drupal/animated_gif": "^1.1.0",
+        "drupal/auto_entitylabel": "^2.1.0-beta1",
+        "drupal/ckeditor_media_embed": "^1.6.0",
+        "drupal/computed_field": "^2.0.0-beta1",
+        "drupal/consumers": "^1.9.0",
+        "drupal/core": "^8.7.1",
+        "drupal/ctools": "^3.2.0",
+        "drupal/group": "^1.0.0-rc2",
+        "drupal/nodeorder": "^1.0.0-beta2",
+        "drupal/override_node_options": "^2.4.0",
+        "drupal/pathauto": "^1.4.0",
+        "drupal/publishcontent": "^1.0.0",
+        "drupal/rest_absolute_urls": "^1.0.0-beta1",
+        "drupal/rest_export_nested": "^1.0.0-alpha4",
+        "drupal/rest_menu_items": "^2.6.0",
+        "drupal/rest_password": "^1.5.0",
+        "drupal/restui": "^1.17.0",
+        "drupal/rules": "^3.0.0-alpha4",
+        "drupal/simple_oauth": "^3.16.0",
+        "drupal/token": "^1.5.0",
+        "drupal/typed_data": "^1.0.0-alpha3",
+        "drupal/video_embed_facebook": "^1.3.0",
+        "drupal/video_embed_field": "^2.1.0",
+        "drupal/video_embed_google_drive": "^1.1.0",
+        "drupal/video_embed_instagram": "^1.0.0",
+        "drupal/video_embed_soundcloud": "^1.1.0",
+        "drupal/video_embed_ted": "^1.3.0",
+        "drupal/views_contextual_filters_or": "^1.1.0",
+        "drupal/views_field_view": "^1.0.0-beta2",
+        "drupal/vimeo_video_uploader": "^4.0.0",
+        "drupal/workflow": "1.x-dev",
+        "grasmash/drupal-security-warning": "^1.0.0",
+        "oomphinc/composer-installers-extender": "^1.1",
+        "vimeo/vimeo-api": "^2.0",
+        "wikimedia/composer-merge-plugin": "^1.4.1"
+    },
+    "require-dev": {},
+    "config": {
+        "sort-packages": true,
+        "discard-changes": true,
+        "optimize-autoloader": true
+    },
+    "conflict": {
+        "drupal/drupal": "*"
+    },
+    "extra": {
+        "enable-patching": true,
+        "composer-exit-on-patch-failure": true,
+        "patchLevel": {
+            "drupal/core": "-p2"
+        },
+        "patches": [],
+        "installer-types": [
+            "bower-asset",
+            "npm-asset"
+        ],
+        "installer-paths": {
+            "drush/Commands/{$name}": [
+                "type:drupal-drush"
+            ],
+            "core": [
+                "type:drupal-core"
+            ],
+            "modules/contrib/{$name}": [
+                "type:drupal-module"
+            ],
+            "modules/custom/{$name}": [
+                "type:drupal-custom-module"
+            ],
+            "profiles/contrib/{$name}": [
+                "type:drupal-profile"
+            ],
+            "profiles/custom/{$name}": [
+                "type:drupal-custom-profile"
+            ],
+            "themes/contrib/{$name}": [
+                "type:drupal-theme"
+            ],
+            "themes/custom/{$name}": [
+                "type:drupal-custom-theme"
+            ],
+            "libraries/{$name}": [
+                "type:drupal-library",
+                "type:bower-asset",
+                "type:npm-asset"
+            ]
+        },
+        "merge-plugin": {
+            "include": [
+                "modules/custom/*/composer.json"
+            ],
+            "replace": false,
+            "ignore-duplicates": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

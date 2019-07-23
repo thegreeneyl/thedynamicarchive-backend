@@ -1,0 +1,13 @@
+name: Views Contextual Filters OR
+type: module
+description: 'Modify views query to support OR conditions for contextual filters.'
+package: Views
+# core: 8.x
+dependencies:
+  - drupal:views
+
+# Information added by Drupal.org packaging script on 2019-01-30
+version: '8.x-1.1'
+core: '8.x'
+project: 'views_contextual_filters_or'
+datestamp: 1548869888

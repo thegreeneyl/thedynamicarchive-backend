@@ -1,0 +1,8 @@
+workflow:
+  js:
+    js/workflow.js: {}
+  css:
+    theme:
+      css/workflow.css: {}
+  dependencies:
+   - core/jquery

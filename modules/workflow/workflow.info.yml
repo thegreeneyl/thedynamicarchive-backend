@@ -1,0 +1,13 @@
+name: Workflow
+type: module
+description: Provides Workflow enhancements for the Dynamic Archive.
+package: Custom modules
+# core: 8.x
+dependencies:
+  - drupal:help
+
+# Information added by Drupal.org packaging script on 2019-04-05
+version: '8.x-1.x-dev'
+core: '8.x'
+project: 'custom'
+datestamp: 1554507185

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    html {
+      width: 100%;
+      height: 100%;
+      background-color: #ddd;
+      font-family: sans-serif;
+    }
+
+    button {
+      position: absolute;
+    }
+
+    .sub {
+      position: fixed;
+      left: 0;
+      right: 0;
+      margin: auto;
+      bottom: 0px;
+      font-size: 24px;
+      color: #ffee9d;
+      width: 800px;
+      text-align: center;
+      letter-spacing: 2px;
+      bottom: 10px;
+      pointer-events: none;
+      text-shadow: -1px 0 black, 0 1px grey, 1px 0 black, 0 -1px grey;
+    }
+  </style>
+</head>
+
+<body>
+
+  <button id='btn' onclick='alert("Congrats! You pressed the button.");'>Press</button>
+  <div id="sub" class="sub"></div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous">
+  </script>
+
+  <script type="text/javascript">
+    var curX = 0;
+    var curY = 0;
+
+    var min_left = 100;
+    var min_top = 100;
+    var max_left = $(window).width() - 100;
+    var max_top = $(window).height() - 100;
+
+    var leftCalc = Math.floor(Math.random() * (max_left - min_left)) + min_left;
+    var topCalc = Math.floor(Math.random() * (max_top - min_top)) + min_top;
+
+    $(document).ready(function() {
+      console.log(leftCalc + ',' + topCalc)
+      $('#btn').css({
+        left: leftCalc,
+        top: topCalc
+      });
+      many();
+    });
+
+    function many() {
+      for (var i = 0; i < 30; i++) {
+        var min_left1 = 10;
+        var min_top1 = 10;
+        var max_left1 = $(window).width() - 10;
+        var max_top1 = $(window).height() - 10;
+        var left1 = Math.floor(Math.random() * (max_left1 - min_left1)) + min_left1;
+        var top1 = Math.floor(Math.random() * (max_top1 - min_top1)) + min_top1;
+        $('body').append('<button class="dis">Press</button>');
+        $('.dis').each(function() {
+          left1 = Math.floor(Math.random() * (max_left1 - min_left1)) + min_left1;
+          top1 = Math.floor(Math.random() * (max_top1 - min_top1)) + min_top1;
+          $(this).css({
+            left: left1,
+            top: top1
+          });
+        });
+      };
+      $('.dis').mouseover(function() {
+        $(this).css('display', 'none');
+      });
+    };
+
+  </script>
+
+</body>
+
+</html>
