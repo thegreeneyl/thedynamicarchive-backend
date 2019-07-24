@@ -2,5 +2,5 @@
 ./modules/contrib
 ./themes/contrib
 ./profiles/contrib
-./libraries
-vendor
+
+
