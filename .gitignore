@@ -2,6 +2,7 @@
 ./modules/contrib
 ./themes/contrib
 ./profiles/contrib
+<<<<<<< HEAD
 .gitignore
 /vendor/
 
@@ -15,3 +16,7 @@ sites/*/private
 
 # Ignore SimpleTest multi-site environment.
 sites/simpletest
+=======
+
+
+>>>>>>> 59174953076e5af304e37b3c54dd41b591e2278a
