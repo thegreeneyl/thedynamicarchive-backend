@@ -372,6 +372,7 @@ function workflow_group_presave($entity) {
   if (isset($entity->field_description)) $summary .= "\n" . $entity->field_description->value;
   if (isset($entity->field_categories)) foreach ($entity->field_categories as $item) $summary .= "\n" . $item->entity->label();
   if (isset($entity->field_context)) foreach ($entity->field_context as $item) $summary .= "\n" . $item->entity->label();
+  if (isset($entity->field_feature_event)) foreach ($entity->field_feature_event as $item) $summary .= "\n" . $item->entity->label();
 
   if (!$entity->isNew()) {
     $members = $entity->getMembers();
