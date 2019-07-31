@@ -729,10 +729,6 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
  * example.org, with all subdomains included.
  */
 
-$settings['trusted_host_patterns'] = array(
-  '^api\.thedynamicarchive\.net$',
-);
-
 /**
  * The default list of directories that will be ignored by Drupal's file API.
  *
@@ -782,9 +778,9 @@ $settings['entity_update_backup'] = TRUE;
 #   include $app_root . '/' . $site_path . '/settings.local.php';
 # }
 $databases['default']['default'] = array (
-  'database' => 'web95_db1',
-  'username' => 'web95',
-  'password' => 'Vv4Fdefi',
+  'database' => 'dynamicarchive-v1-9',
+  'username' => 'root',
+  'password' => 'root',
   'prefix' => '',
   'host' => 'localhost',
   'port' => '3306',
