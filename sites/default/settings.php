@@ -778,7 +778,7 @@ $settings['entity_update_backup'] = TRUE;
 #   include $app_root . '/' . $site_path . '/settings.local.php';
 # }
 $databases['default']['default'] = array (
-  'database' => 'dynamicarchive-v1-9',
+  'database' => 'dynamicarchive-v1-10',
   'username' => 'root',
   'password' => 'root',
   'prefix' => '',

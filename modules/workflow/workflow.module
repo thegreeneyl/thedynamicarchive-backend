@@ -266,6 +266,13 @@ function workflow_entity_update($entity) {
 
     $group->changed = REQUEST_TIME;
     $group->save();
+  } else {
+    views_invalidate_cache();
+      \Drupal::logger('workflow')
+      ->info('Views Cache Cleared on update: @label, of @bundle', [
+      '@label' => $entity->getEntityTypeId(),
+      '@bundle' => $entity->bundle(),
+    ]);
   }
 }
 
@@ -426,16 +433,24 @@ function workflow_group_delete($entity) {
 
 function workflow_views_data_alter(&$data) {
 
-    $data['group_content_field_data']['group_content_uid'] = [
-      'title' => t('User is Group-Member.'),
-      'help' => t('Filters out if the current user is group member.'),
-      'filter' => [
-        'field' => 'uid',
-        'id' => 'workflow_group_content_uid',
-        'label' => t('User is Group-Member'),
-      ],
-    ];
-  
+  $data['group_content_field_data']['group_content_uid'] = [
+    'title' => t('User is Group-Member.'),
+    'help' => t('Filters out if the current user is group member.'),
+    'filter' => [
+      'field' => 'uid',
+      'id' => 'workflow_group_content_uid',
+      'label' => t('User is Group-Member'),
+    ],
+  ];
+
+  $data['term_data']['sort_if_sticky'] = array(
+    'title' => t('Term Weight if Sticky'),
+    'help' => t('Sort by Taxanomy Term if that is marked as Sticky.'),
+    'sort' => array(
+      'field' => 'field_feature_event_value',
+      'id' => 'event',
+    ),
+  );
 }
 
 
