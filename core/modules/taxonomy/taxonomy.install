@@ -7,6 +7,7 @@
 
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Site\Settings;
+use Drupal\node\NodeInterface;
 
 /**
  * Convert the custom taxonomy term hierarchy storage to a default storage.
@@ -194,4 +195,51 @@ function taxonomy_update_8701() {
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
   $storage_definition = $entity_definition_update_manager->getFieldStorageDefinition('parent', 'taxonomy_term');
   $entity_definition_update_manager->updateFieldStorageDefinition($storage_definition);
+}
+
+
+/**
+ * Add unpublished nodes to the taxonomy index table.
+ */
+function taxonomy_update_8703(&$sandbox) {
+  $database = \Drupal::database();
+
+  if (!isset($sandbox['total'])) {
+    // Initialize state for future calls.
+    $sandbox['last'] = 0;
+    $sandbox['count'] = 0;
+
+    $query = $database->select('node_field_data', 'n')
+      ->condition('n.status', NodeInterface::NOT_PUBLISHED);
+    $sandbox['total'] = $query->countQuery()->execute()->fetchField();
+  }
+
+  if ($sandbox['total']) {
+    // Operate on every unpublished node, in batches.
+    $batch_size = 100;
+    $query = $database->select('node_field_data', 'n');
+    $query
+      ->fields('n', ['nid'])
+      ->condition('n.nid', $sandbox['last'], '>')
+      ->condition('n.status', NodeInterface::NOT_PUBLISHED)
+      ->orderBy('n.nid', 'ASC')
+      ->range(0, $batch_size);
+    $nids = $query->execute()->fetchCol();
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    // Build the taxonomy index for each node.
+    foreach ($node_storage->loadMultiple($nids) as $node) {
+      // Delete node index to avoid integrity constraint violation errors.
+      taxonomy_delete_node_index($node);
+      taxonomy_build_node_index($node);
+      $sandbox['last'] = $node->id();
+    }
+    $sandbox['count'] += $batch_size;
+  }
+  // Finish after all the unpublished nodes have been processed.
+  if ($sandbox['count'] < $sandbox['total']) {
+    $sandbox['#finished'] = FALSE;
+  }
+  else {
+    $sandbox['#finished'] = TRUE;
+  }
 }
