@@ -11,6 +11,7 @@ use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\TermInterface;
@@ -489,20 +490,21 @@ function taxonomy_node_insert(EntityInterface $node) {
  * The index lists all terms that are related to a given node entity, and is
  * therefore maintained at the entity level.
  *
- * @param \Drupal\node\Entity\Node $node
+ * @param \Drupal\node\NodeInterface $node
  *   The node entity.
  */
-function taxonomy_build_node_index($node) {
+function taxonomy_build_node_index(NodeInterface $node) {
   // We maintain a denormalized table of term/node relationships, containing
   // only data for current, published nodes.
   if (!\Drupal::config('taxonomy.settings')->get('maintain_index_table') || !(\Drupal::entityManager()->getStorage('node') instanceof SqlContentEntityStorage)) {
     return;
   }
 
-  $status = $node->isPublished();
-  $sticky = (int) $node->isSticky();
-  // We only maintain the taxonomy index for published nodes.
-  if ($status && $node->isDefaultRevision()) {
+  // We only maintain the taxonomy index for the default node revision.
+  if ($node->isDefaultRevision()) {
+    $status = (int) $node->isPublished();
+    $sticky = (int) $node->isSticky();
+
     // Collect a unique list of all the term IDs from all node fields.
     $tid_all = [];
     $entity_reference_class = 'Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem';
@@ -525,7 +527,7 @@ function taxonomy_build_node_index($node) {
       $connection = \Drupal::database();
       foreach ($tid_all as $tid) {
         $connection->merge('taxonomy_index')
-          ->key(['nid' => $node->id(), 'tid' => $tid, 'status' => $node->isPublished()])
+          ->key(['nid' => $node->id(), 'tid' => $tid, 'status' => $status])
           ->fields(['sticky' => $sticky, 'created' => $node->getCreatedTime()])
           ->execute();
       }

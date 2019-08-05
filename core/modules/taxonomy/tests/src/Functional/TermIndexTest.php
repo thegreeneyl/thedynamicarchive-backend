@@ -108,6 +108,21 @@ class TermIndexTest extends TaxonomyTestBase {
     ])->fetchField();
     $this->assertEqual(1, $index_count, 'Term 1 is indexed once.');
 
+    // Check that the node status is stored correctly.
+    $node_status = (int) db_query('SELECT status FROM {taxonomy_index} WHERE nid = :nid AND tid = :tid', [
+      ':nid' => $node->id(),
+      ':tid' => $term_1->id(),
+    ])->fetchField();
+    $this->assertEqual(1, $node_status, 'Term 1 is index once with the node status published.');
+
+    // Un publish the article, this should update the register.
+    $node->setUnpublished()->save();
+    $node_status = (int) db_query('SELECT status FROM {taxonomy_index} WHERE nid = :nid AND tid = :tid', [
+      ':nid' => $node->id(),
+      ':tid' => $term_1->id(),
+    ])->fetchField();
+    $this->assertEqual(0, $node_status, 'Term 1 is index once with the node status unpublished.');
+
     // Update the article to change one term.
     $edit["{$this->fieldName1}[]"] = $term_2->id();
     $this->drupalPostForm('node/' . $node->id() . '/edit', $edit, t('Save'));
