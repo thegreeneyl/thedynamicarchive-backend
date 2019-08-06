@@ -152,6 +152,7 @@ class ComponentOrderResource extends ResourceBase {
 
 				        		$thenode->field_group->target_id = $targetterm["tid"];
 								$thenode->save();
+								$nodes[$node["nid"]] = $node;
 							} else $test = false;
 						}
 						if ($test) {
