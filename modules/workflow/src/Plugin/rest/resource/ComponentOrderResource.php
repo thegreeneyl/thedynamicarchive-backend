@@ -130,7 +130,7 @@ class ComponentOrderResource extends ResourceBase {
 					    );
 					}
 
-					$response['groups'][$tweight] = array(
+					$response['groups'][] = array(
 						'content' => [], 
 						'tid' => intval($term->id()),
 					);
