@@ -232,6 +232,41 @@ function workflow_taxonomy_term_update($entity) {
   //workflow_entity_update($entity);
 }
 
+function workflow_taxonomy_term_insert($entity) {
+  
+  if ($entity->bundle() == "group") {
+
+    $groupID = intval($entity->get('field_component')->getString());
+    $query = \Drupal::entityQuery('taxonomy_term');
+    $query->condition('vid', "group");
+    $query->condition('field_component', $groupID);
+    $query->sort('weight','DESC');
+    $query->range(0,1);
+    $terms = $query->execute();
+    //$value = "";
+    if (count($terms)) foreach ($terms as $tid => $t) {
+      $term = Term::load($tid);
+      //$value .= " ".$term->get('weight')->getString();
+      $entity->set('weight', intval($term->get('weight')->getString()) + 1);
+    }
+
+    \Drupal::logger('workflow')
+      ->info('Insert @bundle: component @component, weight @weight', [
+      '@bundle' => $entity->bundle(),
+      '@weight' => $entity->get('weight')->getString(),
+      '@component' => $groupID,
+    ]);
+
+    drupal_register_shutdown_function('_cc_custom_post_insert',$entity);
+  }
+}
+
+function _cc_custom_post_insert($entity) {
+    if($entity) {
+        $entity->save();
+    }
+}
+
 function workflow_entity_update($entity) {
   //dpm($entity);
 
@@ -443,14 +478,35 @@ function workflow_views_data_alter(&$data) {
     ],
   ];
 
-  $data['term_data']['sort_if_sticky'] = array(
-    'title' => t('Term Weight if Sticky'),
-    'help' => t('Sort by Taxanomy Term if that is marked as Sticky.'),
+  $data['group__field_feature_event']['sort_if_sticky'] = array(
+    'title' => t('Feature Event if Sticky'),
+    'group' => t('Group'),
+    'help' => t('Sort by Feture Event if that is marked as Sticky.'),
     'sort' => array(
       'field' => 'field_feature_event_value',
-      'id' => 'event',
+      'id' => 'sort_if_sticky',
     ),
   );
+}
+
+function workflow_views_data() {
+
+    $data['views']['table']['group'] = t('Custom Global');
+    $data['views']['table']['join'] = [
+      // #global is a special flag which allows a table to appear all the time.
+      '#global' => [],
+    ];
+
+
+    $data['views']['workflow_name'] = [
+        'title' => t('Special Term Name'),
+        'help' => t('Displays Special Term Name for Page-Reference'),
+        'field' => [
+            'id' => 'workflow_name',
+        ],
+    ];
+
+    return $data;
 }
 
 
