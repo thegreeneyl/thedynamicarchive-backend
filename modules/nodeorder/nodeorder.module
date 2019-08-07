@@ -254,6 +254,7 @@ function nodeorder_node_update(NodeInterface $node) {
   foreach ($old_tids as $tid => $weight) {
     $nodeorder_manager->handleListsDecrease($tid);
   }
+
 }
 
 /**
