@@ -270,7 +270,7 @@ function _cc_custom_post_insert($entity) {
 function workflow_entity_update($entity) {
   //dpm($entity);
 
-  if ($entity->getEntityTypeId() == "group") {
+  if ($entity->getEntityTypeId() == "group" || $entity->getEntityTypeId() == "feature_events" || $entity->getEntityTypeId() == "page") {
     views_invalidate_cache();
       \Drupal::logger('workflow')
       ->info('Views Cache Cleared on update: @label, of @bundle', [
