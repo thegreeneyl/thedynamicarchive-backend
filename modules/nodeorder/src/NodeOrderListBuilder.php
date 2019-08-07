@@ -297,6 +297,8 @@ class NodeOrderListBuilder extends EntityListBuilder implements FormInterface {
 
     $this->cacheDefault->deleteAll();
     views_invalidate_cache();
+    \Drupal::logger('nodeorder')
+      ->info('Views Cache Cleared on node orders update', []);
   }
 
 }
