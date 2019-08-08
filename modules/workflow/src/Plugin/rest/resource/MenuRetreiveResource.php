@@ -173,7 +173,10 @@ class MenuRetreiveResource extends ResourceBase {
       "label-delete" => "Delete",
       "label-save" => "Save",
       "label-published" => "Publish",
-      "label-unpublished" => "Unpublish"
+      "label-unpublished" => "Unpublish",
+      "max_file_size" => "Max file size: 15mb | .jpg .jpeg .png .gif",
+      "choose_image" => "Choose Image",
+      "confirm_deletion" => "Are you sure to delete?",
     );
   }
 
