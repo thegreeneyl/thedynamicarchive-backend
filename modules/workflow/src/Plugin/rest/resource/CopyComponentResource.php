@@ -49,7 +49,7 @@ class CopyComponentResource extends ResourceBase {
 	  //$query->distinct(TRUE);
 	  $result = $query->execute();
 
-	  if($nodeIds = $result->fetchCol()){
+	  if($nodeIds = $result->fetchCol() && is_array($nodeIds)){
 	    return Node::loadMultiple($nodeIds);
 	  }
 
@@ -65,7 +65,7 @@ class CopyComponentResource extends ResourceBase {
       $query->sort('tid', 'ASC');
 
 	  $tids = $query->execute();
-
+	  if (is_array($tids)) return NULL;
 	  $terms = Term::loadMultiple($tids);
 	  return $terms;
 	}

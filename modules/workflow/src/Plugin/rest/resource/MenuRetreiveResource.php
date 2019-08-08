@@ -106,10 +106,29 @@ class MenuRetreiveResource extends ResourceBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   public function get() {
-    $menu_name = "main";
+    // Setup variables.
+    $this->setup();
+
+    $this->menuItems = [];
+    $this->menuItems[0] = [];
+    $this->getMenuByName($this->menuItems[0], "main");
+    $this->getMenuByName($this->menuItems[0], "footer");
+    $this->getLabels($this->menuItems[0], "labels");
+
+    // Return response.
+    $response = new ResourceResponse(array_values($this->menuItems));
+
+    // Configure caching for minDepth and maxDepth parameters.
+    // if ($response instanceof CacheableResponseInterface) {
+    //   $response->addCacheableDependency(new RestMenuItemsCacheableDependency($menu_name, $this->minDepth, $this->maxDepth));
+    // }
+
+    // Return the JSON response.
+    return $response;
+  }
+
+  function getMenuByName(array &$theMenu = [], $menu_name) {
     if ($menu_name) {
-      // Setup variables.
-      $this->setup();
 
       // Create the parameters.
       $parameters = new MenuTreeParameters();
@@ -127,21 +146,10 @@ class MenuRetreiveResource extends ResourceBase {
       $menu_tree = \Drupal::menuTree();
       $tree = $menu_tree->load($menu_name, $parameters);
 
-      // Return if the menu does not exist or has no entries.
-      if (empty($tree)) {
-        $response = new ResourceResponse($tree);
-
-        if ($response instanceof CacheableResponseInterface) {
-          $response->addCacheableDependency(new RestMenuItemsCacheableDependency($menu_name, $this->minDepth, $this->maxDepth));
-        }
-
-        return $response;
-      }
-
       // Transform the tree using the manipulators you want.
       $manipulators = [
         // Only show links that are accessible for the current user.
-        ['callable' => 'menu.default_tree_manipulators:checkAccess'],
+        //['callable' => 'menu.default_tree_manipulators:checkAccess'],
         // Use the default sorting of menu links.
         ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
       ];
@@ -149,26 +157,24 @@ class MenuRetreiveResource extends ResourceBase {
 
       // Finally, build a renderable array from the transformed tree.
       $menu = $menu_tree->build($tree);
+      $theMenu[$menu_name] = [];
 
-      // Return if the menu has no entries.
-      if (empty($menu['#items'])) {
-        return new ResourceResponse([]);
-      }
+      $this->getMenuItems($menu['#items'], $theMenu[$menu_name]);
 
-      $this->getMenuItems($menu['#items'], $this->menuItems);
-
-      // Return response.
-      $response = new ResourceResponse(array_values($this->menuItems));
-
-      // Configure caching for minDepth and maxDepth parameters.
-      if ($response instanceof CacheableResponseInterface) {
-        $response->addCacheableDependency(new RestMenuItemsCacheableDependency($menu_name, $this->minDepth, $this->maxDepth));
-      }
-
-      // Return the JSON response.
-      return $response;
     }
-    throw new HttpException(t("Menu name was not provided"));
+  }
+
+  function getLabels(array &$theMenu = [], $menu_name) {
+    $theMenu[$menu_name] = array(
+      "label-edit" => "Edit",
+      "label-related" => "Related",
+      "label-copy" => "Copy",
+      "label-close" => "Close",
+      "label-delete" => "Delete",
+      "label-save" => "Save",
+      "label-published" => "Publish",
+      "label-unpublished" => "Unpublish"
+    );
   }
 
   /**
@@ -182,7 +188,7 @@ class MenuRetreiveResource extends ResourceBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function getMenuItems(array $tree, array &$items = []) {
+  function getMenuItems(array $tree, array &$items = []) {
     $config = $this->configFactory->get('rest_menu_items.config');
     $outputValues = $config->get('output_values');
 
@@ -283,6 +289,7 @@ class MenuRetreiveResource extends ResourceBase {
 
       case 'title':
         $value = $link->getTitle();
+        $returnArray[$key] = $value;
         break;
 
       case 'description':
@@ -337,6 +344,8 @@ class MenuRetreiveResource extends ResourceBase {
         if (!$existing) {
           $value = Url::fromUri($url->getUri())->toString();
         }
+        $key = "url";
+        $returnArray[$key] = $value;
         break;
 
       case 'existing':
@@ -373,7 +382,6 @@ class MenuRetreiveResource extends ResourceBase {
         break;
     }
 
-    $returnArray[$key] = $value;
   }
 
 }
