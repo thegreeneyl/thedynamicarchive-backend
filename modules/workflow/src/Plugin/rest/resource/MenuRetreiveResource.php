@@ -113,7 +113,7 @@ class MenuRetreiveResource extends ResourceBase {
     $this->menuItems[0] = [];
     $this->getMenuByName($this->menuItems[0], "main");
     $this->getMenuByName($this->menuItems[0], "footer");
-    $this->getLabels($this->menuItems[0], "labels");
+    $this->getSettings($this->menuItems[0]);
 
     // Return response.
     $response = new ResourceResponse(array_values($this->menuItems));
@@ -164,20 +164,19 @@ class MenuRetreiveResource extends ResourceBase {
     }
   }
 
-  function getLabels(array &$theMenu = [], $menu_name) {
-    $theMenu[$menu_name] = array(
-      "label-edit" => "Edit",
-      "label-related" => "Related",
-      "label-copy" => "Copy",
-      "label-close" => "Close",
-      "label-delete" => "Delete",
-      "label-save" => "Save",
-      "label-published" => "Publish",
-      "label-unpublished" => "Unpublish",
-      "max_file_size" => "Max file size: 15mb | .jpg .jpeg .png .gif",
-      "choose_image" => "Choose Image",
-      "confirm_deletion" => "Are you sure to delete?",
-    );
+  function getSettings(array &$theMenu = []) {
+
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties(['type' => 'settings', 'status' => 1]);
+
+    foreach ($nodes as $node) {
+      $menu_name = strtolower(str_replace(' ', '_', trim($node->getTitle()) ));
+      $fields = $node->get("field_fields");
+      $values = [];
+      foreach ($fields as $f) $values[$f->first] = $f->second;
+      $theMenu[$menu_name] = $values;
+    }
   }
 
   /**
