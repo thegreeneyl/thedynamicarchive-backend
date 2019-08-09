@@ -173,7 +173,7 @@ class MenuRetreiveResource extends ResourceBase {
     foreach ($nodes as $node) {
       $menu_name = strtolower(str_replace(' ', '_', trim($node->getTitle()) ));
       $fields = $node->get("field_fields");
-      $values = [];
+      $values = array();
       foreach ($fields as $f) $values[$f->first] = $f->second;
       $theMenu[$menu_name] = $values;
     }
