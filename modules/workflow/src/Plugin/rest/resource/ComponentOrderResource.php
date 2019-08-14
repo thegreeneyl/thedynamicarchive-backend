@@ -66,7 +66,7 @@ class ComponentOrderResource extends ResourceBase {
       $query->sort('tid', 'ASC');
 
 	  $tids = $query->execute();
-	  if (is_array($tids)) return NULL;
+	  if (!is_array($tids)) return NULL;
 
 	  $terms = Term::loadMultiple($tids);
 	  return $terms;
@@ -83,7 +83,7 @@ class ComponentOrderResource extends ResourceBase {
     }
     $response = $data;
     
-  	if (array_key_exists("id", $data)) {
+  	if (is_array($data) && array_key_exists("id", $data)) {
 	  	$group_id = intval($data["id"]);
 
 	    if (is_numeric($group_id)) $group = Group::load($group_id);
@@ -101,7 +101,7 @@ class ComponentOrderResource extends ResourceBase {
 
 			$tweight = 0;
 
-			foreach ($data["groups"] as $key => $targetterm) {
+			if (is_array($terms)) foreach ($data["groups"] as $key => $targetterm) {
 			  	if (array_key_exists($targetterm['tid'], $terms)) {
 			  		$term = $terms[$targetterm['tid']];
 
