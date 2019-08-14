@@ -65,7 +65,8 @@ class CopyComponentResource extends ResourceBase {
       $query->sort('tid', 'ASC');
 
 	  $tids = $query->execute();
-	  if (is_array($tids)) return NULL;
+	  if (!is_array($tids)) return NULL;
+	  
 	  $terms = Term::loadMultiple($tids);
 	  return $terms;
 	}
