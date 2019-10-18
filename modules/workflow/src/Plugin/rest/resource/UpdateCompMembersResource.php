@@ -50,7 +50,7 @@ class UpdateCompMembersResource extends ResourceBase {
     if ($group != null) {
 		$currentuser = \Drupal::currentUser();
 		$test = \Drupal\user\Entity\User::load(6);
-		if ($group->getMember($currentuser) || true) { //$test->hasPermission('Bypass group access control')) {
+		if ($group->getMember($currentuser) || $currentuser->hasPermission('bypass group access')) {
 			$members = [];
 			if (array_key_exists("members", $data)) { 
 				$membership = $group->getMembers();
