@@ -92,10 +92,21 @@ class UpdateCompMembersResource extends ResourceBase {
 	}
     if ($group != null) {
 		$user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+		$members = [];
 		if (array_key_exists("members", $data)) { 
+			foreach ($data['members'] as $key => $user) {
+				if (array_key_exists("uid", $user) && $account = \Drupal\user\Entity\User::load($user["uid"])) {
+					if (!$group->getMember($account)) $group->addMember($account);
+					$members[] = $account;
+				} else {
+					//$account->found = "not";
+					$members[] = $user["uid"]." not found";
+				}
+
+			}
 		}
     	
-		$response = ['ID' => $group_id, 'component' => $group];
+		$response = ['ID' => $group_id, 'component' => $group, 'members' => $members];
     } else $response = ['message' => 'Component '.$data["id"].' not found', 'data' => $data];
 
 	return new ModifiedResourceResponse($response);
