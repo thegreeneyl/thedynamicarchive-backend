@@ -34,49 +34,6 @@ use Drupal\Component\Serialization\Json;
 class UpdateCompMembersResource extends ResourceBase {
 
 
-	public function workflowAddMembersToGroup($groupId) {
-	  $account = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-	  $group = \Drupal\group\Entity\Group::load($groupId);
-	  $group->addMember($account);
-	  $group->save();
-	}
-
-  public function getNodesByTaxonomyTermIds($termIds){
-	  $termIds = (array) $termIds;
-	  if(empty($termIds)){
-	    return NULL;
-	  }
-
-	  $query = \Drupal::database()->select('taxonomy_index', 'ti');
-	  $query->fields('ti', array('nid'));
-	  $query->condition('ti.tid', $termIds, 'IN');
-	  $query->condition('ti.status', 1, '=');
-      $query->orderBy('ti.weight', 'DESC');
-      $query->orderBy('ti.created', 'ASC');
-	  //$query->distinct(TRUE);
-	  $result = $query->execute();
-
-	  if($nodeIds = $result->fetchCol()){
-	    return Node::loadMultiple($nodeIds);
-	  }
-
-	  return NULL;
-	}
-  public function getTermsByGroupIds($grouId){
-
-	  $query = \Drupal::entityQuery('taxonomy_term');
-	  $query->condition('vid', "group");
-	  $query->condition('field_component', $grouId);
-  	  $query->condition('status', 1, '=');
-	  $query->sort('weight','ASC');
-      $query->sort('tid', 'ASC');
-
-	  $tids = $query->execute();
-	  
-	  $terms = Term::loadMultiple($tids);
-	  return $terms;
-	}
-
   /**
    * Responds to entity POST requests.
    * @return \Drupal\rest\ResourceResponse
@@ -91,50 +48,39 @@ class UpdateCompMembersResource extends ResourceBase {
 	    if (is_numeric($group_id)) $group = Group::load($group_id);
 	}
     if ($group != null) {
-		$user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-		$members = [];
-		if (array_key_exists("members", $data)) { 
-			foreach ($data['members'] as $key => $user) {
-				if (array_key_exists("uid", $user) && $account = \Drupal\user\Entity\User::load($user["uid"])) {
-					if (!$group->getMember($account)) $group->addMember($account);
-					$members[] = $account;
-				} else {
-					//$account->found = "not";
-					$members[] = $user["uid"]." not found";
+		$currentuser = \Drupal::currentUser();
+		$test = \Drupal\user\Entity\User::load(6);
+		if ($group->getMember($currentuser) || true) { //$test->hasPermission('Bypass group access control')) {
+			$members = [];
+			if (array_key_exists("members", $data)) { 
+				$membership = $group->getMembers();
+				foreach ($membership as $k => $m) {
+					$member = $m->getUser();
+					$found = false;
+					foreach ($data['members'] as $key => $user) if ($user["uid"] == $member->uid[0]->value) {
+						$found = true;
+						break;
+					}
+					if (!$found) $unmembers[] = $group->removeMember($member);
 				}
-
+				foreach ($data['members'] as $key => $user) {
+					if (array_key_exists("uid", $user) && $account = \Drupal\user\Entity\User::load($user["uid"])) {
+						if (!$group->getMember($account)) $group->addMember($account);
+						$members[] = $account;
+					} else {
+						//$account->found = "not";
+						$members[] = $user["uid"]." not found";
+					}
+				}
 			}
-		}
     	
-		$response = ['ID' => $group_id, 'component' => $group, 'members' => $members];
+			$response = ['ID' => $group_id, 'component' => $group, 'members' => $members];
+		} else $response = ['message' => 'No Permission to update Component '.$data["id"].'.'];
+
     } else $response = ['message' => 'Component '.$data["id"].' not found', 'data' => $data];
 
 	return new ModifiedResourceResponse($response);
     //return $response;//new ResourceResponse($response);
   }
 
-	 /**
-	 * Return the rendered view with contextual filter.
-	 * @param string $viewId - The view machine name.
-	 * @param string $viewId - The display machine name.
-	 * @param array $arguments - The arguments to pass.
-	 * 
-	 * @return object $result
-	 */
-	function getView($viewId, $displayId, array $arguments)
-	{
-	    $result = false;
-	    $view = Views::getView($viewId);
-
-	    if (is_object($view)) {
-	        $view->setDisplay($displayId);
-	        $view->setArguments($arguments);
-	        $view->execute();
-
-	        // Render the view
-	        $result = \Drupal::service('renderer')->render($view->render());
-	    }
-
-	    return $result;
-	}
 }
